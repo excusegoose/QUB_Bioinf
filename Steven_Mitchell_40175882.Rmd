@@ -1,0 +1,298 @@
+---
+title: "SCM7047 assignment 1 - R programming"
+author: "Steven Mitchell 401758852"
+date: "`r Sys.Date()`"
+output: 
+  bookdown::pdf_document2:
+     toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+library(tidyverse)
+```
+
+# Prerequistes - Install bookdown, rmarkdown, and tidyverse packages
+install.packages(c("bookdown", "rmarkdown", "tidyverse"))
+# check directory 
+getwd()
+setwd("C:/Users/swmit/OneDrive - Queen's University Belfast/SCM7047 Scientific Programming & Statistical Computing/Assignment 1/SCM7047-R-assignment")
+install.packages('tinytex')
+tinytex::install_tinytex()
+
+
+
+# Question 1 {-}
+
+Which parts of the following code do you expect to produce an error? Provide an explanation.   
+*4 marks*
+
+```{r question-1}
+# data1 <- matrix(51:190, nrow = 20)
+# data2 <- Matrix(c(1:10, 20:11), byrow =T)
+# data3 = data1+data2
+
+
+  # data2 variable will produce error in Matrix() as the called function has an 
+#   uppercase M when it should be in lowercase. Therefore, the creation of data2
+#   variable will result in an error. Corrected code shown below. 
+
+data1 <- matrix(51:190, nrow = 20)
+data2 <- matrix(c(1:10, 20:11), byrow = TRUE)
+
+  # data3 will produce an error as the matrix dimensions are incompatible. data1 
+#   20 x 7 is not directly compatible with data2 2 x 10. Matrices can only be 
+#   added or subtracted when they have the same dimensions, as every element 
+#   requires a corresponding element.
+```
+
+# Question 2 {-}
+
+Debug the following code snippets to assign the given values to objects (one object for each line). Comment out the incorrect code and leave a copy of the corrected code beneath.
+For each snippet provide a short explanation as a code comment.   
+*8 marks*
+
+```{r question-2}
+# a) variable.a <- matrix(c(rbind(1:2,), c(1, 2:7, 2, 5)), nrow = 1)
+
+    # Creating matrix but comma is on the wrong side of the in the rbind() 
+#     function, which will result in an error.  
+    variable.a <- matrix(c(rbind(1:2), c(1, 2:7, 2, 5)), nrow = 1)
+
+# b)study_string = as.Character("Assignment1")
+
+    # as.Character() function requires lowercase as.character() to convert 
+#     string "Assignment1" to a character vector.
+    study_string <- as.character("Assignment1")
+    
+#c).5z <- "string manipulation."
+    
+    # A variable name must start with a letter, if it starts with (.) it cannot 
+#     be followed by a digit. Also, variable names cannot begin with a number. 
+#     Therefore, the   variable name .5z is not valid and will result in an error, 
+#     a valid name would be .z5
+    .z5 <- "string manipulation."
+
+#d) Varz <= c(TRUE, FALSE, 56, "TRUE", "TRUE", TRUE, 88, 567.5)
+    
+    # Assignment operator should be <- not <= which would be less than or equal to. 
+    Varz <- c(TRUE, FALSE, 56, "TRUE", "TRUE", TRUE, 88, "567.5")
+    
+```
+
+# Question 3 {-}
+
+In the given code, a user enters the following values: 
+  `var1` = 4 
+  `var2` = 25
+  `var3` = 1050 
+  expecting the return value to be 31. However, it does not return anything. Modify the code (not the input values) so that it returns the value as expected by the user. Briefly explain your changes using code comments. 
+*12 marks*
+
+
+```{r question-3}
+#   ~BAD CODE~      var1 <- as.integer(readline("Enter a value:"))
+#                   var2 <- as.integer(readline("Enter a value:"))
+#                   var3 <- as.integer(readline("Enter a value:"))
+#                   func.1 <- function(var1) {
+#                   func.2 <- function(var2) {
+#                   var2 + var3
+#                   }
+#                   var1 + func.2(var2)
+#                   var3 = 2
+#                   }
+#                   func.1(var1)
+
+#   ~ANSWER~
+
+var1 <- as.integer(readline("Enter a value:"))
+
+var2 <- as.integer(readline("Enter a value:"))
+
+var3 <- as.integer(readline("Enter a value:"))
+
+# Move re-assignment of var3 to before the definition of func.2
+var3 <- 2
+
+func.1 <- function(var1) {
+  func.2 <- function(var2) {
+    var2 + var3
+  }
+  # Return result 
+  return(var1 + func.2(var2))
+}
+# Print to console
+print(func.1(var1))
+
+
+```
+
+
+# Question 4 {-}
+
+Solutions for this question should not rely on `tidyverse` functions.
+
+Write a function-based program in R which performs the following tasks based on data it reads from the CSV file `Q4-CervicalCancer.csv`. The program should be called using a _single_ line of code in which the user can specify _three_ arguments: `var_x` and `var_y` each representing a different variable in the dataset and `output_type` indicating the type of file in which to save summary statistics.
+
+a) Produce a data.frame containing summary statistics for `var_x` and `var_y`:  mean, standard deviation, range, and number of missing values. 
+*8 marks*
+
+b) Create a scatter plot between `var_x` and `var_y`. The plot should have X and Y axis labels and a plot title based on the selected attributes (e.g. – Biopsy Vs Age). 
+*12 marks*
+
+c) Your program should give the user an option to save the summary results as either a .csv or a .txt file, named `Q4-summary-statistics`.
+*6 marks*
+
+About the sample file – This is a cervical cancer dataset from Hospital Universitario de Caracas, Venezuela. To learn more about the dataset, refer to the UCI Repository.
+
+```{r question-4}
+analysis_function <- function(var_x, var_y, output_type) {
+  
+  # Read in data
+  data <- read.csv("Q4-CervicalCancer.csv", header = TRUE, stringsAsFactors = FALSE)
+  
+  # Check if the variables are numeric, if not, convert to numeric
+  if (!is.numeric(data[[var_x]])) {
+    data[[var_x]] <- as.numeric(data[[var_x]])
+  }
+  if (!is.numeric(data[[var_y]])) {
+    data[[var_y]] <- as.numeric(data[[var_y]])
+  }
+  
+  # Get the summary statistics for var_x and var_y
+  summary_stats <- data.frame(
+    variable = c(var_x, var_y),
+    mean = c(mean(data[, var_x], na.rm = TRUE), mean(data[, var_y], na.rm = TRUE)),
+    sd = c(sd(data[, var_x], na.rm = TRUE), sd(data[, var_y], na.rm = TRUE)),
+    range = c(paste0(min(data[, var_x], na.rm = TRUE), "-", max(data[, var_x], 
+                                                                na.rm = TRUE)),
+              paste0(min(data[, var_y], na.rm = TRUE), "-", max(data[, var_y], 
+                                                                na.rm = TRUE))),
+    missing = c(sum(is.na(data[, var_x])), sum(is.na(data[, var_y])))
+  )
+  
+  # Print summary statistics
+  print(summary_stats)
+  
+  # Create scatter plot of var_x vs. var_y
+  plot(data[, var_x], data[, var_y], main = paste(var_x, "Vs", var_y), 
+       xlab = var_x, ylab = var_y)
+  
+  # Save summary statistics
+  if (output_type == "csv") {
+    write.csv(summary_stats, file = "Q4-summary-statistics.csv", row.names = FALSE)
+  } else if (output_type == "txt") {
+    write.table(summary_stats, file = "Q4-summary-statistics.txt", sep = "\t", 
+                row.names = FALSE)
+  } else {
+    cat("Error: Output type must be 'csv' or 'txt'")
+  }
+}
+
+analysis_function("Num.of.pregnancies", "Age", "csv")
+
+```
+
+# Question 5 {-}
+
+Solutions using either base R or `tidyverse` functions will be accepted for this question.
+
+As a member of a Data Science team in a Bio-analytics company, you have been assigned the following tasks:
+
+a) Develop a function-based R program which reads a dataset specified by the user and performs the following operations. The program should be called using a _single_ line of code in which the user can specify an appropriate number of arguments.
+  
+  i. Provide the number of dimensions and the names of variables for a user-specified dataset 
+  *6 marks*
+  
+  ii. Replace any missing values with NA. 
+  *2 marks*
+  
+  iii. Outputs a box plot of the distribution for at least one user-specified continuous variable. 
+  *6 marks*
+
+Two files are provided, `Q5-File1.csv` contains clinical data and `Q5-File2.csv` contains protein expression data. The program should work for both of these files (called separately for each).
+
+```{r question-5A}
+
+# Define function 
+boxplot_function <- function(file_name, var_names) {
+  
+  # Read dataset
+  data <- read.csv(file_name, header = TRUE)
+  
+  # Get the number of dimensions and variable names
+  n_dims <- dim(data)[2]
+  names <- colnames(data)
+  
+  # Print the number of dimensions and variable names
+  cat("Number of dimensions:", n_dims, "\n")
+  cat("Variable names:", paste(names, collapse = ", "), "\n")
+  
+  # Replace missing values with NA
+  data[is.na(data)] <- NA
+  
+  # Output a box plot for the first specified continuous variable
+  var <- var_names[1]
+  if (is.numeric(data[[var]])) {
+    boxplot(data[[var]], main = paste("Box plot of", var))
+  } else {
+    cat(paste("Variable", var, "is not continuous"))
+  }
+}
+
+boxplot_function ("Q5-File1.csv", c("Clin_Age"))
+
+```
+
+b) Develop a function-based R program, which matches patient IDs (variable `PatientID`) from the first dataset with reference IDs (`Reference_ID`) from the second dataset. `Reference ID` in the second file is a combination of patient ID with sample ID (hint – try strsplit() or tidyverse separate()). For each patient, produce a data.frame listing the arithmetic mean of expression values for each protein. Thereafter, based on a user specified threshold value, produce a data.frame listing patients with a mean protein expression value for any protein above this threshold. The program should be called using a _single_ line of code in which the user can specify the protein threshold as an argument.
+
+*36 marks*
+
+```{r question-5B}
+
+library(tidyverse)
+
+# Define function 
+match_patients <- function(threshold) {
+  
+  # Load data from Q5-File1.csv and Q5-File2.csv
+  data1 <- read.csv("Q5-File1.csv")
+  data2 <- read.csv("Q5-File2.csv")
+  
+  # Extract patient IDs from Reference IDs in data2 
+  data2 <- separate(data2, Reference_ID, into=c("PatientID", "SampleID"), sep="_")
+
+  # Change to integer data
+  data1$PatientID <- as.numeric(data1$PatientID)
+  data2$PatientID <- as.numeric(data2$PatientID)
+  
+  # Convert any non-numeric data to NA
+  data2[data2 == "?"] <- NA
+  data2[data2 == ""] <- NA
+  data1[data1 == "?"] <- NA
+  data1[data1 == ""] <- NA
+  
+  # Convert Protein columns to numeric
+  data2[, 6:15] <- apply(data2[, 6:15], 2, function(x) as.numeric(as.character(x)))
+  
+  # Compute the mean expression of each protein for each patient
+  mean_protein_by_patient <- data.frame(aggregate
+                                        (data2[,6:15], by = list
+                                          (PatientID = data2$PatientID), 
+                                          FUN = function(x) mean(x, na.rm = TRUE)))
+  
+  # Merge data1 and mean_protein_by_patient based on PatientID
+  merged_data <- merge(mean_protein_by_patient, data1, by = "PatientID")
+  
+  # Filter patients by mean protein values greater than threshold
+  filtered_data <- subset(merged_data, rowMeans(merged_data[, 2:11], 
+                                                na.rm = TRUE) > threshold)
+  
+  # Return filtered data.frame
+  return(filtered_data)
+}
+
+# Call match_patients function with threshold of 1500
+match_patients(1500)
+
+```
