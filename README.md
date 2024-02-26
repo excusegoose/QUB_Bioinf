@@ -1,4 +1,4 @@
-> Completed assignments for QUB's PgCert in Biostatistics and Bioinformatics <
+> Completed assignments for QUB's PgCert in Biostatistics and Bioinformatics 
 
 # Modules <br />
 ### See branches to navigate to module <br />
